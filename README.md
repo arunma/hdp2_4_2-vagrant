@@ -1,5 +1,3 @@
-*This repository is inspired and modified from cstanca1/hdp2_4_2-vagrant*
-
 # Setup Hortonworks Data Platform using Vagrant, VirtualBox and Ambari
 
 ## Objective
@@ -20,6 +18,8 @@ This approach has been tested on OS X host, but it should work on all supported 
 4. Open a command shell and change to the folder where you plan to clone the github repository
 5. Clone the Github repository:  ```git clone https://github.com/arunma/hdp2_5-vagrant.git```
 
+### Prerequisites 
+
 Edit the vagrantfile to point to the the network adapter that you would like to use :
 
 ```
@@ -39,6 +39,20 @@ Available bridged network interfaces:
 6) bridge0
 
 ```
+
+
+# 1. Super-Easy Install
+
+## Just one command 
+Once you have configured the network adapter correctly in the Vagrantfile, all you need to execute is one single command 
+
+`vagrant up ambari master slave1 slave2`
+
+That's it !!  Proceed to install your Cluster using the url http://192.168.1.11:8080
+
+##OR
+
+# 2. Easy Install 
 
 ## Start Ambari VM
 
