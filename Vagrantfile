@@ -12,7 +12,7 @@ Vagrant.configure(2) do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "bento/centos-6.7"
+  config.vm.box = "bento/centos-7.3"
 
 
  $script = <<SCRIPT
@@ -22,6 +22,7 @@ Vagrant.configure(2) do |config|
   sudo chkconfig iptables off
   sudo /etc/init.d/iptables stop
   sudo setenforce 0
+  echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf > /dev/null
   sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
   sudo sed -i 's/SELINUX=permissive/SELINUX=disabled/g' /etc/selinux/config
   sudo sh -c 'echo "* soft nofile 10000" >> /etc/security/limits.conf'
@@ -29,11 +30,16 @@ Vagrant.configure(2) do |config|
   sudo sh -c 'echo never > /sys/kernel/mm/redhat_transparent_hugepage/defrag'
   sudo sh -c 'echo never > /sys/kernel/mm/redhat_transparent_hugepage/enabled'
   sudo cp /vagrant/hosts /etc/hosts
-  sudo mkdir -p /root/.ssh; chmod 600 /root/.ssh; cp /vagrant/id_rsa.pub /root/.ssh/
-  sudo cp /vagrant/id_rsa /root/.ssh/ 
-  sudo cat /vagrant/id_rsa.pub >> /root/.ssh/authorized_keys
+  sudo mkdir -p /root/.ssh; chmod 600 /root/.ssh
+  if [ -f /vagrant/id_rsa.pub ]; then sudo cat /vagrant/id_rsa.pub >> /root/.ssh/authorized_keys; fi
 SCRIPT
-  
+
+$ambari_script = <<SCRIPT
+  cd /vagrant
+  sudo chmod 755 ambari.sh
+  sudo sh ./ambari.sh
+SCRIPT
+
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
@@ -57,8 +63,7 @@ SCRIPT
   # the path on the host to the actual folder. The second argument is
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
-  config.vm.synced_folder "data", "/vagrant_data"
-
+  config.vm.synced_folder "data", "/vagrant"
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
@@ -92,41 +97,43 @@ SCRIPT
   config.vm.provision "shell", inline: $script
  
   # Ambari1
-  config.vm.define :ambari1 do |a1|
-    a1.vm.hostname = "ambari1.mycluster"
-    a1.vm.network :private_network, ip: "192.168.0.11"
+  config.vm.define :ambari do |a1|
+    a1.vm.hostname = "ambari.vgcluster"
+    a1.vm.network :public_network, ip: "192.168.1.11", bridge: "en0: Wi-Fi (AirPort)"
     a1.vm.provider :virtualbox do |vb|
-      vb.memory = "2048"
+      vb.memory = "1024"
     end
+
+    a1.vm.provision "shell", inline: $ambari_script
 
     a1.vm.network "forwarded_port", guest: 8080, host: 8080
     a1.vm.network "forwarded_port", guest: 80, host: 8081
   end
 
   # Master1
-  config.vm.define :master1 do |m1|
-    m1.vm.hostname = "master1.mycluster"
-    m1.vm.network :private_network, ip: "192.168.0.12"
+  config.vm.define :master do |m1|
+    m1.vm.hostname = "master.vgcluster"
+    m1.vm.network :public_network, ip: "192.168.1.12", bridge: "en0: Wi-Fi (AirPort)"
     m1.vm.provider :virtualbox do |vb|
-      vb.memory = "3072"
+      vb.memory = "2048"
     end
   end
 
   # Slave1
   config.vm.define :slave1 do |s1|
-    s1.vm.hostname = "slave1.mycluster"
-    s1.vm.network :private_network, ip: "192.168.0.21"
+    s1.vm.hostname = "slave1.vgcluster"
+    s1.vm.network :public_network, ip: "192.168.1.21", bridge: "en0: Wi-Fi (AirPort)"
     s1.vm.provider :virtualbox do |vb|
-      vb.memory = "2048"
+      vb.memory = "1024"
     end
   end
 
   # Slave2
   config.vm.define :slave2 do |s2|
-    s2.vm.hostname = "slave2.mycluster"
-    s2.vm.network :private_network, ip: "192.168.0.22"
+    s2.vm.hostname = "slave2.vgcluster"
+    s2.vm.network :public_network, ip: "192.168.1.22", bridge: "en0: Wi-Fi (AirPort)"
     s2.vm.provider :virtualbox do |vb|
-      vb.memory = "2048"
+      vb.memory = "1024"
     end
   end
 end
