@@ -67,5 +67,5 @@ Check if id_rsa and id_rsa.pub keys of the ambari VM is available in your local 
 
 ### Deploy Cluster using Ambari Web UI
 
-Open up a web browser and go to http://ambari:8080.
+Open up a web browser and go to http://192.168.1.11:8080. Alternatively, make an entry into your /etc/hosts on your host machine.
 Log in with username admin and password admin and follow on-screen instructions, selecting hosts created and services of interest.
