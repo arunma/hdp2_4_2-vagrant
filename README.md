@@ -29,7 +29,7 @@ bridge: "en0: Wi-Fi (AirPort)"
 
 If you aren't sure about the exact name, use the following command : 
 
-###Windows 
+### Windows 
 From your Virtualbox installation folder (eg : C:\Program Files\Oracle\VirtualBox) : 
 
 ```
@@ -37,7 +37,7 @@ VBoxManage.exe list bridgedifs
 
 ```
 
-###OSX
+### OSX
 
 ```
 vboxmanage list bridgedifs
