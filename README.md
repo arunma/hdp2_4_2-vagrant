@@ -27,16 +27,20 @@ bridge: "en0: Wi-Fi (AirPort)"
 
 ```
 
-If you aren't sure about the exact name, just type in a junk text or delete the `,bridge: "en0: Wi-Fi (AirPort)"` (with the comma) and the `vagrant up ambari` will prompt you for an entry like so : 
+If you aren't sure about the exact name, use the following command : 
+
+### Windows 
+From your Virtualbox installation folder (eg : C:\Program Files\Oracle\VirtualBox) : 
 
 ```
-Available bridged network interfaces:
-1) en0: Wi-Fi (AirPort)
-2) en1: Thunderbolt 1
-3) en2: Thunderbolt 2
-4) p2p0
-5) awdl0
-6) bridge0
+VBoxManage.exe list bridgedifs
+
+```
+
+### OSX
+
+```
+vboxmanage list bridgedifs
 
 ```
 
