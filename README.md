@@ -8,8 +8,14 @@ This is helpful for development and proof of concepts.
 ## Scope
 This approach has been tested on OS X host, but it should work on all supported Vagrant and VirtualBox environments.
 
-## Pre-requisites
-- Minimum 5 GB of RAM for the HDP 2.5 cluster
+## Memory requirements
+
+- Please adjust the `vb.memory` according to your requirements - The minimum would be 
+      `vb.memory = "1024"` for Ambari and Data nodes and 
+      `vb.memory = "2048"` for the master node.
+
+- Adjust your `vb.cpus` to 1 if needed as well. The default is set at 2.
+
 
 ## Steps
 1. Download and install Vagrant for your host OS: https://www.vagrantup.com/downloads.html
@@ -44,19 +50,7 @@ vboxmanage list bridgedifs
 
 ```
 
-
-# 1. Super-Easy Install
-
-## Just one command 
-Once you have configured the network adapter correctly in the Vagrantfile, all you need to execute is one single command 
-
-`vagrant up ambari master slave1 slave2`
-
-That's it !!  Proceed to install your Cluster using the url http://192.168.1.11:8080
-
-##OR
-
-# 2. Easy Install 
+# Easy Install 
 
 ## Start Ambari VM
 
@@ -80,7 +74,11 @@ If you see the following messages at the end of the logs, then the installation 
 
 Check if id_rsa and id_rsa.pub keys of the ambari VM is available in your local /data folder.  This folder from your local machine is synced with the /vagrant folder in ambari and all other host machines.  Start the other three VMs:
 
-```vagrant up master slave1 slave2```
+```vagrant up master```
+
+```vagrant up slave1```
+
+```vagrant up slave2```
 
 
 ### Deploy Cluster using Ambari Web UI

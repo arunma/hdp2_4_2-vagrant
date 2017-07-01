@@ -16,28 +16,31 @@ Vagrant.configure(2) do |config|
 
 
  $script = <<SCRIPT
-  sudo yum -y install ntp
-  sudo chkconfig ntpd on
-  sudo /etc/init.d/ntpd start
-  sudo chkconfig iptables off
-  sudo /etc/init.d/iptables stop
-  sudo setenforce 0
   echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf > /dev/null
+  sudo yum -y install ntp ntpdate ntp-doc
+  sudo chkconfig ntpd on
+  sudo ntpdate pool.ntp.org
+  sudo systemctl start ntpd
+  sudo setenforce 0
   sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
   sudo sed -i 's/SELINUX=permissive/SELINUX=disabled/g' /etc/selinux/config
   sudo sh -c 'echo "* soft nofile 10000" >> /etc/security/limits.conf'
   sudo sh -c 'echo "* hard nofile 10000" >> /etc/security/limits.conf'
-  sudo sh -c 'echo never > /sys/kernel/mm/redhat_transparent_hugepage/defrag'
-  sudo sh -c 'echo never > /sys/kernel/mm/redhat_transparent_hugepage/enabled'
-  sudo cp /vagrant/hosts /etc/hosts
-  sudo mkdir -p /root/.ssh; chmod 600 /root/.ssh
-  if [ -f /vagrant/id_rsa.pub ]; then sudo cat /vagrant/id_rsa.pub >> /root/.ssh/authorized_keys; fi
+  sudo cp /vagrant_data/hosts /etc/hosts
 SCRIPT
 
 $ambari_script = <<SCRIPT
-  cd /vagrant
+  cd /vagrant_data
   sudo chmod 755 ambari.sh
   sudo sh ./ambari.sh
+SCRIPT
+
+$keycopy_script = <<SCRIPT
+  sudo mkdir -p /root/.ssh
+  #chmod 600 /root/.ssh
+  sudo cat /vagrant_data/id_rsa.pub >> /root/.ssh/authorized_keys
+  sudo cat /root/.ssh/authorized_keys
+  echo "DONE!"
 SCRIPT
 
   # Disable automatic box update checking. If you disable this, then
@@ -63,7 +66,7 @@ SCRIPT
   # the path on the host to the actual folder. The second argument is
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
-  config.vm.synced_folder "data", "/vagrant"
+  config.vm.synced_folder "data", "/vagrant_data", type: "virtualbox"
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
@@ -99,13 +102,13 @@ SCRIPT
   # Ambari1
   config.vm.define :ambari do |a1|
     a1.vm.hostname = "ambari.vgcluster"
-    a1.vm.network :public_network, ip: "192.168.1.11", bridge: "en0: Wi-Fi (AirPort)"
+    a1.vm.network :public_network, ip: "192.168.1.11", bridge: "Realtek PCIe GBE Family Controller"
     a1.vm.provider :virtualbox do |vb|
-      vb.memory = "1024"
+      vb.memory = "4096"
+      vb.cpus = 2
     end
 
     a1.vm.provision "shell", inline: $ambari_script
-
     a1.vm.network "forwarded_port", guest: 8080, host: 8080
     a1.vm.network "forwarded_port", guest: 80, host: 8081
   end
@@ -113,27 +116,33 @@ SCRIPT
   # Master1
   config.vm.define :master do |m1|
     m1.vm.hostname = "master.vgcluster"
-    m1.vm.network :public_network, ip: "192.168.1.12", bridge: "en0: Wi-Fi (AirPort)"
+    m1.vm.network :public_network, ip: "192.168.1.12", bridge: "Realtek PCIe GBE Family Controller"
     m1.vm.provider :virtualbox do |vb|
-      vb.memory = "2048"
+      vb.memory = "4096"
+      vb.cpus = 2
     end
+    m1.vm.provision "shell", inline: $keycopy_script
   end
 
   # Slave1
   config.vm.define :slave1 do |s1|
     s1.vm.hostname = "slave1.vgcluster"
-    s1.vm.network :public_network, ip: "192.168.1.21", bridge: "en0: Wi-Fi (AirPort)"
+    s1.vm.network :public_network, ip: "192.168.1.21", bridge: "Realtek PCIe GBE Family Controller"
     s1.vm.provider :virtualbox do |vb|
-      vb.memory = "1024"
+      vb.memory = "3072"
+      vb.cpus = 2
     end
+    s1.vm.provision "shell", inline: $keycopy_script
   end
 
   # Slave2
   config.vm.define :slave2 do |s2|
     s2.vm.hostname = "slave2.vgcluster"
-    s2.vm.network :public_network, ip: "192.168.1.22", bridge: "en0: Wi-Fi (AirPort)"
+    s2.vm.network :public_network, ip: "192.168.1.22", bridge: "Realtek PCIe GBE Family Controller"
     s2.vm.provider :virtualbox do |vb|
-      vb.memory = "1024"
+      vb.memory = "3072"
+      vb.cpus = 2
     end
+    s2.vm.provision "shell", inline: $keycopy_script
   end
 end
