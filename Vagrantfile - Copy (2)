@@ -102,7 +102,7 @@ SCRIPT
   # Ambari1
   config.vm.define :ambari do |a1|
     a1.vm.hostname = "ambari.vgcluster"
-    a1.vm.network :private_network, ip: "192.168.1.11", bridge: "Intel(R) Ethernet Connection (2) I218-V"
+    a1.vm.network :public_network, ip: "192.168.1.11", bridge: "Intel(R) Ethernet Connection (2) I218-V"
     a1.vm.provider :virtualbox do |vb|
       vb.memory = "6144"
       vb.cpus = 3
@@ -111,20 +111,12 @@ SCRIPT
     a1.vm.provision "shell", inline: $ambari_script
     a1.vm.network "forwarded_port", guest: 8080, host: 8080
     a1.vm.network "forwarded_port", guest: 80, host: 8081
-    a1.vm.provision "shell",
-    run: "always",
-    inline: "route add default gw 192.168.1.1 enp0s8"
-
-    # delete default gw on enp0s3
-    a1.vm.provision "shell",
-    run: "always",
-    inline: "eval `route -n | awk '{ if ($8 ==\"enp0s3\" && $2 != \"0.0.0.0\") print \"route del default gw \" $2; }'`"
   end
 
   # Master1
   config.vm.define :master do |m1|
     m1.vm.hostname = "master.vgcluster"
-    m1.vm.network :private_network, ip: "192.168.1.12", bridge: "Intel(R) Ethernet Connection (2) I218-V"
+    m1.vm.network :public_network, ip: "192.168.1.12", bridge: "Intel(R) Ethernet Connection (2) I218-V"
     m1.vm.provider :virtualbox do |vb|
       vb.memory = "6144"
       vb.cpus = 3
@@ -133,6 +125,11 @@ SCRIPT
     m1.vm.provision "shell",
     run: "always",
     inline: "route add default gw 192.168.1.1 enp0s8"
+
+    # default router ipv6
+    #m1.vm.provision "shell",
+    #run: "always",
+    #inline: "route -A inet6 add default gw fe80::1 enp0s8"
 
     # delete default gw on enp0s3
     m1.vm.provision "shell",
@@ -143,57 +140,33 @@ SCRIPT
   # Slave1
   config.vm.define :slave1 do |s1|
     s1.vm.hostname = "slave1.vgcluster"
-    s1.vm.network :private_network, ip: "192.168.1.21", bridge: "Intel(R) Ethernet Connection (2) I218-V"
+    s1.vm.network :public_network, ip: "192.168.1.21", bridge: "Intel(R) Ethernet Connection (2) I218-V"
     s1.vm.provider :virtualbox do |vb|
       vb.memory = "4096"
       vb.cpus = 2
     end
     s1.vm.provision "shell", inline: $keycopy_script
-    s1.vm.provision "shell",
-    run: "always",
-    inline: "route add default gw 192.168.1.1 enp0s8"
-
-      # delete default gw on enp0s3
-    s1.vm.provision "shell",
-    run: "always",
-    inline: "eval `route -n | awk '{ if ($8 ==\"enp0s3\" && $2 != \"0.0.0.0\") print \"route del default gw \" $2; }'`"
   end
 
   # Slave2
   config.vm.define :slave2 do |s2|
     s2.vm.hostname = "slave2.vgcluster"
-    s2.vm.network :private_network, ip: "192.168.1.22", bridge: "Realtek PCIe GBE Family Controller"
+    s2.vm.network :public_network, ip: "192.168.1.22", bridge: "Intel(R) Ethernet Connection (2) I218-V"
     s2.vm.provider :virtualbox do |vb|
       vb.memory = "4096"
       vb.cpus = 2
     end
     s2.vm.provision "shell", inline: $keycopy_script
-    s2.vm.provision "shell",
-    run: "always",
-    inline: "route add default gw 192.168.1.1 enp0s8"
-
-    # delete default gw on enp0s3
-    s2.vm.provision "shell",
-    run: "always",
-    inline: "eval `route -n | awk '{ if ($8 ==\"enp0s3\" && $2 != \"0.0.0.0\") print \"route del default gw \" $2; }'`"
   end
 
   # Slave3
   config.vm.define :slave3 do |s3|
     s3.vm.hostname = "slave3.vgcluster"
-    s3.vm.network :private_network, ip: "192.168.1.23", bridge: "Intel(R) Ethernet Connection (2) I218-V"
+    s3.vm.network :public_network, ip: "192.168.1.23", bridge: "Intel(R) Ethernet Connection (2) I218-V"
     s3.vm.provider :virtualbox do |vb|
       vb.memory = "4096"
       vb.cpus = 2
     end
     s3.vm.provision "shell", inline: $keycopy_script
-    s3.vm.provision "shell",
-    run: "always",
-    inline: "route add default gw 192.168.1.1 enp0s8"
-
-    # delete default gw on enp0s3
-    s3.vm.provision "shell",
-    run: "always",
-    inline: "eval `route -n | awk '{ if ($8 ==\"enp0s3\" && $2 != \"0.0.0.0\") print \"route del default gw \" $2; }'`"
   end
 end
