@@ -102,7 +102,7 @@ SCRIPT
   # Ambari1
   config.vm.define :ambari do |a1|
     a1.vm.hostname = "ambari.vgcluster"
-    a1.vm.network :public_network, ip: "192.168.1.11", bridge: "Realtek PCIe GBE Family Controller"
+    a1.vm.network :private_network, ip: "192.168.1.11", bridge: "Realtek PCIe GBE Family Controller"
     a1.vm.provider :virtualbox do |vb|
       vb.memory = "4096"
       vb.cpus = 2
@@ -116,7 +116,7 @@ SCRIPT
   # Master1
   config.vm.define :master do |m1|
     m1.vm.hostname = "master.vgcluster"
-    m1.vm.network :public_network, ip: "192.168.1.12", bridge: "Realtek PCIe GBE Family Controller"
+    m1.vm.network :private_network, ip: "192.168.1.12", bridge: "Realtek PCIe GBE Family Controller"
     m1.vm.provider :virtualbox do |vb|
       vb.memory = "4096"
       vb.cpus = 2
@@ -127,7 +127,7 @@ SCRIPT
   # Slave1
   config.vm.define :slave1 do |s1|
     s1.vm.hostname = "slave1.vgcluster"
-    s1.vm.network :public_network, ip: "192.168.1.21", bridge: "Realtek PCIe GBE Family Controller"
+    s1.vm.network :private_network, ip: "192.168.1.21", bridge: "Realtek PCIe GBE Family Controller"
     s1.vm.provider :virtualbox do |vb|
       vb.memory = "3072"
       vb.cpus = 2
@@ -138,7 +138,7 @@ SCRIPT
   # Slave2
   config.vm.define :slave2 do |s2|
     s2.vm.hostname = "slave2.vgcluster"
-    s2.vm.network :public_network, ip: "192.168.1.22", bridge: "Realtek PCIe GBE Family Controller"
+    s2.vm.network :private_network, ip: "192.168.1.22", bridge: "Realtek PCIe GBE Family Controller"
     s2.vm.provider :virtualbox do |vb|
       vb.memory = "3072"
       vb.cpus = 2
