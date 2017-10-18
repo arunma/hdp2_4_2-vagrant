@@ -1,7 +1,4 @@
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-192.168.1.11 ambari.vgcluster ambari
-192.168.1.12 master.vgcluster master
-192.168.1.21 slave1.vgcluster slave1
-192.168.1.22 slave2.vgcluster slave2
-192.168.1.23 slave3.vgcluster slave3
+192.168.1.70 ambaris.vgcluster ambaris
+192.168.1.71 masters.vgcluster masters
