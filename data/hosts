@@ -4,3 +4,4 @@
 192.168.1.12 master.vgcluster master
 192.168.1.21 slave1.vgcluster slave1
 192.168.1.22 slave2.vgcluster slave2
+192.168.1.23 slave3.vgcluster slave3
